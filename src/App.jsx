@@ -153,9 +153,17 @@ export default function App() {
     return null;
   }, []);
 
-  // --- 建立連線房間 ---
+   // --- 建立連線房間 ---
   const createRoom = async () => {
-    if (!user || !db) return;
+    if (!db) {
+      alert("錯誤：資料庫尚未初始化！請確認 firebaseConfig 內的設定是否正確。");
+      return;
+    }
+    if (!user) {
+      alert("錯誤：無法取得玩家身份！請到 Firebase 控制台確認 Authentication 的「匿名登入」已經啟用。");
+      return;
+    }
+    
     const newRoomId = Math.random().toString(36).substring(2, 7).toUpperCase();
     const roomRef = doc(db, 'artifacts', globalAppId, 'public', 'data', 'rooms', newRoomId);
     
@@ -180,7 +188,16 @@ export default function App() {
 
   // --- 加入連線房間 ---
   const joinRoom = async () => {
-    if (!user || !joinCode || !db) return;
+    if (!db) {
+      setJoinError("錯誤：資料庫尚未初始化！");
+      return;
+    }
+    if (!user) {
+      setJoinError("錯誤：無法取得玩家身份！請確認匿名登入已啟用。");
+      return;
+    }
+    if (!joinCode) return;
+    
     const code = joinCode.toUpperCase();
     setJoinError('');
     
