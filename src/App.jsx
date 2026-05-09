@@ -3,9 +3,9 @@ import { User, Cpu, Play, RotateCcw, Home, Trophy, Swords, Globe, Copy, Users } 
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
-import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
+// --- FIREBASE 初始化 ---
 const firebaseConfig = {
   apiKey: "AIzaSyCHHkzgSAgBf-ShDFX5qv1lCgodBD0D_lE",
   authDomain: "gomoku-game-ebf1b.firebaseapp.com",
@@ -16,12 +16,11 @@ const firebaseConfig = {
   measurementId: "G-CK43ZYSGJP"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-
-let app, auth, db, globalAppId;
-
+const auth = getAuth(app);
+const db = getFirestore(app);
+const globalAppId = "gomoku-game";
 
 const BOARD_SIZE = 15;
 const EMPTY = 0;
@@ -99,7 +98,12 @@ export default function App() {
     const initAuth = async () => {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
+          try {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } catch (tokenError) {
+            console.warn("自訂權杖驗證失敗，自動切換至匿名登入", tokenError);
+            await signInAnonymously(auth);
+          }
         } else {
           await signInAnonymously(auth);
         }
@@ -153,7 +157,7 @@ export default function App() {
     return null;
   }, []);
 
-   // --- 建立連線房間 ---
+  // --- 建立連線房間 ---
   const createRoom = async () => {
     if (!db) {
       alert("錯誤：資料庫尚未初始化！請確認 firebaseConfig 內的設定是否正確。");
