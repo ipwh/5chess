@@ -3,6 +3,8 @@ import { User, Cpu, Play, RotateCcw, Home, Trophy, Swords, Globe, Copy, Users } 
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHHkzgSAgBf-ShDFX5qv1lCgodBD0D_lE",
